@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Astro Pi Cam - Live</title>
+    <meta charset="utf-8"/>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="google" content="notranslate" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topnav">
+    <a class="active" href="index.html">Live</a>
+    <a href="archive.php">Archive</a>
+    <a href="tools.php">Tools</a>
+    <a class="shutdown" href="shutdown.html">Shutdown</a>
+    <a id="topbarVersion" style="float:right;">AstroPiCam V1.0</a>
+</div>
+
+<div style="padding-left:16px">
+    <h2>Telescope Live Footage</h2>
+    <p>Omegon N 130/920 EQ-2</p>
+
+    <iframe id="liveViewFrame" src="http://192.168.178.2:8001/" title="Live View" width="98%" style="margin-left: -5px;" scrolling="no" frameBorder="0"></iframe>
+    <br>
+    <button class="button button1" id="captureImageButton" onclick="captureImage()">Capture image</button>
+    <button class="button button1" id="captureHQVideoButton" onclick="captureHQVideoButton()">Capture video</button>
+    <br><i id="infotext" style="font-size:75%;"></i>
+    ︎
+    <script>
+        if (document.getElementById("liveViewFrame").clientWidth > 800) {
+            document.getElementById("liveViewFrame").width = "50%";
+        }
+        document.getElementById("liveViewFrame").height = (document.getElementById("liveViewFrame").clientWidth * 72 / 100) + "px";
+
+        function captureHQVideoButton() {
+            var captureHQVideoButton = document.getElementById("captureHQVideoButton");
+            if (captureHQVideoButton.innerText == "Capture video") {
+                xmlReq = new XMLHttpRequest();
+                xmlReq.open("POST","captureHQVideo.php?action=start",true);
+                xmlReq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xmlReq.send();
+
+                captureHQVideoButton.innerText = "Stop video";
+                captureHQVideoButton.classList.remove('button1');
+                captureHQVideoButton.classList.add('button2');
+
+                document.getElementById("infotext").innerHTML = "Capturing and processing high quality video...";
+                setTimeout(function() {
+                    document.getElementById("infotext").innerText = "";
+                }, 25000);
+
+            } else {
+                xmlReq = new XMLHttpRequest();
+                xmlReq.open("POST","captureHQVideo.php?action=stop",true);
+                xmlReq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xmlReq.send();
+
+                captureHQVideoButton.innerText = "Capture video";
+                captureHQVideoButton.classList.remove('button2');
+                captureHQVideoButton.classList.add('button1');
+
+                setTimeout(function() {
+                    xmlReq2 = new XMLHttpRequest();
+                    xmlReq2.open("POST","restartStream.php",true);
+                    xmlReq2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    xmlReq2.send();
+
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2750);
+                }, 600);
+
+                document.getElementById("infotext").innerText = "HQ Video footage captured, processing in work. Further stacking required for image quality improvements.";
+                setTimeout(function() {
+                    document.getElementById("infotext").innerText = "";
+                }, 7500);
+            }
+        }
+
+        function captureImage() {
+            xmlReq = new XMLHttpRequest();
+            xmlReq.onreadystatechange = function() {
+                if (xmlReq.readyState == XMLHttpRequest.DONE) {
+                    document.getElementById("infotext").innerHTML = "Image saved as \"" + xmlReq.response + "\". You can download it in the <a href='/archive.php'>archive</a>.";
+                }
+            }
+            xmlReq.open("POST","captureImage.php",true);
+            xmlReq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xmlReq.send();
+
+            document.getElementById("infotext").innerHTML = "Capturing and processing image...";
+            setTimeout(function() {
+                document.getElementById("infotext").innerText = "";
+            }, 7500);
+        }
+    </script>
+</div>
+
+</body>
+</html>

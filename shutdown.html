@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Astro Pi Cam - Shutdown</title>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="google" content="notranslate" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topnav">
+    <a href="index.html">Live</a>
+    <a href="archive.php">Archive</a>
+    <a href="tools.php">Tools</a>
+    <a class="shutdown">Shutdown</a>
+    <a id="topbarVersion" style="float:right;">AstroPiCam V1.0</a>
+</div>
+
+<div style="padding-left:16px">
+    <h2>Confirm Shutdown</h2>
+    <p>Are you sure that you want to shutdown?</p>
+
+    <button class="button button2" onclick="shutdown()">Confirm Shutdown</button>
+    <button class="button button3" onclick="reboot()">Reboot</button>
+</div>
+
+
+<script>
+    function shutdown() {
+        xmlReq = new XMLHttpRequest();
+        xmlReq.open("POST","sysControl.php?action=shutdown",true);
+        xmlReq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlReq.send();
+    }
+    function reboot() {
+        xmlReq = new XMLHttpRequest();
+        xmlReq.open("POST","sysControl.php?action=reboot",true);
+        xmlReq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlReq.send();
+    }
+</script>
+</body>
+</html>
