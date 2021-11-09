@@ -48,3 +48,6 @@ Version 3, 29 June 2007
  of this license document, but changing it is not allowed.
  
 [Read the full license here](https://github.com/louis-e/astropicam/blob/main/LICENSE)
+
+<br>
+louis-e, 2021
